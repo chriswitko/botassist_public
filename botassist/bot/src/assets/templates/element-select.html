@@ -1,0 +1,13 @@
+<div class="field">
+  <label>
+    {{$ctrl.raw.label}}
+  </label>
+  <div id="gender" class="ui selection dropdown">
+    <input ng-model="$ctrl.f[$ctrl.raw.variable]" type="hidden" name="gender">
+    <i class="dropdown icon"></i>
+    <div class="default text">{{$ctrl.raw.placeholder}}</div>
+    <div class="menu">
+      <div class="item" data-value="{{opt.name}}" ng-click="$ctrl.selectOption($ctrl.raw.variable, opt.name)" ng-repeat="opt in $ctrl.raw.options track by $index" on-finish-render="{{$ctrl.raw.variable + 'OnFinishRender'}}">{{opt.name}}</div>
+    </div>
+  </div>
+</div>   

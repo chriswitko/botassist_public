@@ -1,0 +1,92 @@
+{
+	"sender": {
+		"id": "1234",
+    "custom_fields": {
+      "contact_email": "hi@botassi.st"
+    }
+	},
+	"recipient": { 
+		"id": "1234",
+		"insights": {
+			"first_seen": "2016-10-10",
+			"last_seen": "2016-10-10",
+			"number_of_visits": 5
+		},
+		"custom_fields": { 
+			"name": "Chris Witko",
+			"email": "chris.witko@gmail.com",
+			"short_size": "L",
+			"shoes_size": "45",
+			"date_birth": {
+				"day": "10",
+				"month": "10",
+				"year": 1980
+			}
+		}
+	},
+  "card": {
+    "name": "My first card",
+    "template_type": "text",
+    "payload": {
+      "header": {
+        "text": "Subscribe"
+      },
+      "form": {
+        "fields": [
+          {
+            "type": "description",
+            "text": "Hi {{recipient.custom_fields.name}}. Enter your email address to receive promotional offers and discounts."
+          },
+          {
+            "type": "email",
+            "label": "Email",
+            "placeholder": "Enter your email address",
+            "variable": "email"
+          },
+          {
+            "type": "text",
+            "label": "Name",
+            "placeholder": "Enter your full name",
+            "variable": "name"
+          },
+          {
+            "type": "select",
+            "label": "Gender",
+            "placeholder": "Gender",
+            "variable": "gender",
+            "options": [
+              {
+                "name": "Male",
+                "default": false
+              },
+              {
+                "name": "Female",
+                "default": true
+              }
+            ]
+          }
+        ]
+      },
+      "buttons": [
+        {
+          "action": {
+            "method": "postback",
+            "message_id": "1234",
+            "url": "http://google.com"
+          },
+          "text": "Send",
+          "icon": "chat",
+          "color": "green"
+        },
+        {
+          "text": "Cancel",
+          "icon": "remove",
+          "color": "default"
+        }
+      ]
+    },
+    "custom_fields": {
+      "responses": 10
+    }
+  }
+}

@@ -1,0 +1,796 @@
+<!DOCTYPE>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>BotAssi.st</title>
+    <link rel="stylesheet" type="text/css" href="./assets/css/master.css">
+    <link rel="stylesheet" type="text/css" href="./assets/css/animate.css">
+    <script src="./assets/js/jquery/jquery.min.js"></script>
+    <script src="./assets/js/semantic/semantic.min.js"></script>
+    <script src="./assets/js/angular/angular.min.js"></script>
+    <script src="./assets/js/angular/angular-resource.min.js"></script>
+    <style>
+      body {
+        background: transparent;
+      }
+
+      .hide {
+        display: none!important;
+      }
+
+      .bot-messages {
+        position: absolute;
+        display: block;
+        margin: 15px;
+      }
+
+      .card {
+        width: 340px!important;
+      }
+
+    </style>
+  </head>
+  <body>
+    <div ng-app="myapp" ng-controller="MessagesCtrl">
+      <script type="text/ng-template" id="assets/templates/summary.html">
+        <element-image raw="$ctrl.raw.image" ng-if="$ctrl.raw.image"></element-image>
+        <a href class="item summary-text" ng-repeat="el in $ctrl.raw.fields track by $index">
+          <i class="middle aligned icon" ng-class="el.icon" ng-if="el.icon"></i>
+          {{el.text}}
+        </a>
+        <div class="ui bottom attached buttons">
+          <div class="ui bottom attached button back">
+            Powered by BotAssi.st
+          </div>
+          <div class="ui bottom attached button icon">
+            <i class="bookmark icon"></i>
+          </div>
+          <div class="ui bottom attached button icon">
+            <i class="close icon"></i>
+          </div>
+        </div>
+      </script>
+      <section class="bot-messages animated bounceInUp" animationend="alertMe">
+        <card source="card" ng-if="card">
+          <div ng-class="el.class" ng-repeat="el in fields track by $index">
+            <htmldiv content="el.element"></htmldiv>
+          </div>
+        </card>
+      </section>
+    </div>
+  </body>
+
+  <script type='text/javascript'>//<![CDATA[
+
+  var myApp = angular.module('myapp',[]);
+
+  myApp
+    .config(['$httpProvider', function($httpProvider) {
+      //initialize get if not there
+      if (!$httpProvider.defaults.headers.get) {
+          $httpProvider.defaults.headers.get = {};    
+      }    
+
+      // Answer edited to include suggestions from comments
+      // because previous version of code introduced browser-related errors
+
+      //disable IE ajax request caching
+      $httpProvider.defaults.headers.get['If-Modified-Since'] = 'Mon, 26 Jul 1997 05:00:00 GMT';
+      // extra
+      $httpProvider.defaults.headers.get['Cache-Control'] = 'no-cache';
+      $httpProvider.defaults.headers.get['Pragma'] = 'no-cache';
+    }])
+    .controller('MessagesCtrl', ['$scope', '$http', function($scope, $http) {
+      var vm = this;
+
+      $scope.greeting = 'Hola!';
+
+      $scope.f = {
+        gender: 'Female'
+      }
+      $scope.card = {}
+      $scope.fields = [];
+
+      function loadCard (type) {
+        // console.log('hello loadTextCard');
+        $http.get('/assets/json/card_' + (type || 'text') + '.json?ts=' + new Date().valueOf()).success(function(card) {
+          // console.log('card', card);
+          $scope.card = card;
+          var payload = card.card.payload;
+          if(payload.header) {
+            $scope.fields.push({
+              class: 'content',
+              element: '<element-header raw="card.card.payload.header"></element-header>'
+            });
+          }
+          if(payload.image) {
+            $scope.fields.push({
+              class: '',
+              element: '<element-image raw="card.card.payload.image"></element-image>'
+            });
+          }
+          if(payload.summary) {
+            $scope.fields.push({
+              class: 'ui vertical card menu',
+              element: '<summary raw="card.card.payload.summary"></summary>'
+            });
+          }
+          if(payload.form) {
+            $scope.fields.push({
+              class: 'content',
+              element: '<element-form f="card.f" raw="card.card.payload.form"></element-form>'
+            });
+          }
+          if(payload.embed) {
+            $scope.fields.push({
+              class: 'content',
+              element: '<element-embed raw="card.card.payload.embed"></element-embed>'
+            });
+          }
+          if(payload.text) {
+            $scope.fields.push({
+              class: 'content',
+              element: '<element-text raw="card.card.payload.text"></element-text>'
+            });
+          }
+          if(payload.extra_content) {
+            $scope.fields.push({
+              class: 'content',
+              element: '<element-extra raw="card.card.payload.extra_content"></element-extra>'
+            });
+          }
+          if(payload.buttons) {
+            $scope.fields.push({
+              class: '',
+              element: '<element-buttons f="card.f" raw="card.card.payload.buttons"></element-buttons>'
+            });
+          }
+        });      
+      }
+
+      $scope.alertMe = function() {
+        sendMessage();
+      };
+
+      vm.$onInit = function() {
+        loadCard('summary');
+      }
+    }])
+    .component('summary', {
+      restrict: 'E',
+      bindings: {
+        source: '=',
+        raw: '='
+      },
+      require: {
+        parent: '^card',
+      },
+      templateUrl: 'assets/templates/summary.html',
+      controller: function() {
+        var vm = this;
+
+        vm.$onInit = function() {
+          // console.log('hello hello hello', vm.source)
+          // sendMessage();
+        }
+
+        vm.$postLink = function () {
+          // vm.me = vm.source.sender;
+          // vm.recipient = vm.source.recipient;
+          // vm.design = vm.source.card.payload;
+          sendMessage();
+        };        
+
+        vm.alertMe = function() {
+          sendMessage();
+        };
+
+        // vm.$onChanges = function (newVal) {
+        //   vm.me = vm.source.sender;
+        //   vm.recipient = vm.source.recipient;
+        //   vm.design = vm.source.card.payload;
+        // }
+      }
+    })  
+    .component('card', {
+      restrict: 'E',
+      bindings: {
+        source: '='
+      },
+      transclude: true,
+      templateUrl: 'assets/templates/card.html',
+      controllerAs: "card",
+      controller: function($element, $transclude) {
+        var vm = this;
+
+        vm.f = {}
+
+        vm.$onInit = function() {
+          // console.log('hello hello hello', vm.source)
+        }
+
+        vm.$postLink = function () {
+          // $element.append($transclude());
+          // vm.me = vm.source.sender;
+          // vm.recipient = vm.source.recipient;
+          // vm.design = vm.source.card.payload;
+          sendMessage();
+        };        
+
+        vm.alertMe = function() {
+          sendMessage();
+        };
+
+        vm.$onChanges = function (newVal) {
+          vm.me = vm.source.sender;
+          vm.recipient = vm.source.recipient;
+          vm.design = vm.source.card.payload;
+          // sendMessage();
+          // console.log('form changes', newVal)
+        }
+      }
+    })    
+    .component('elementForm', {
+      restrict: 'E',
+      bindings: {
+        raw: '=',
+        f: '='
+      },
+      require: {
+        parent: '^card',
+      },
+      templateUrl: 'assets/templates/element-form.html',
+      controller: function() {
+        var vm = this;
+
+        vm.f = {
+          gender: 'Female'
+        }
+
+        vm.fields = [];
+
+        vm.$onInit = function() {
+          vm.raw.fields.forEach(function(el, index) {
+            if(el.type === 'text' || el.type === 'email') {
+              vm.fields.push({
+                class: 'content',
+                element: '<element-input-text f="$ctrl.f" raw="$ctrl.raw.fields[' + index + ']"></element-input-text>'
+              });
+            } else if(el.type === 'select') {
+              vm.fields.push({
+                class: 'content',
+                element: '<element-select f="$ctrl.f" raw="$ctrl.raw.fields[' + index + ']"></element-select>'
+              });
+            } else if(el.type === 'description') {
+              vm.fields.push({
+                class: 'content',
+                element: '<element-description f="$ctrl.f" raw="$ctrl.raw.fields[' + index + ']"></element-description>'
+              });
+            }
+          })
+        }
+
+        vm.postForm = function() {
+          alert('post3');
+          console.log('DATA FORM', vm.f);
+        }
+
+        vm.$postLink = function () {
+          // $('#gender').dropdown('set selected', "2");
+          sendMessage();
+        };        
+      }
+    })    
+    .component('elementText', {
+      restrict: 'E',
+      bindings: {
+        raw: '='
+      },
+      require: {
+        parent: '^card',
+      },
+      templateUrl: 'assets/templates/element-text.html',
+      controller: function() {
+        var vm = this;
+
+        vm.$postLink = function () {
+          sendMessage();
+        };        
+      }    
+    })    
+    .component('elementDescription', {
+      restrict: 'E',
+      bindings: {
+        raw: '='
+      },
+      require: {
+        parent: '^card',
+      },
+      templateUrl: 'assets/templates/element-description.html',
+      controller: function() {
+        var vm = this;
+
+        vm.$postLink = function () {
+          sendMessage();
+        };        
+      }    
+    })  
+    .component('elementInputText', {
+      restrict: 'E',
+      bindings: {
+        label: '@',
+        raw: '=',
+        f: '='
+      },
+      parent: '^card',
+      templateUrl: 'assets/templates/element-input-text.html',
+      controller: function() {
+        var vm = this;
+
+        vm.$postLink = function () {
+          sendMessage();
+        };        
+      }
+    })  
+    .component('elementCheckbox', {
+      restrict: 'E',
+      bindings: {
+        label: '@'
+      },
+      parent: '^card',
+      templateUrl: 'assets/templates/element-checkbox.html',
+      controller: function() {
+        var vm = this;
+
+        vm.$postLink = function () {
+          $('.ui.checkbox').checkbox();
+          sendMessage();
+        };        
+      }
+    })  
+    .component('elementSelect', {
+      restrict: 'E',
+      bindings: {
+        label: '@',
+        raw: '=',
+        f: '='
+      },
+      parent: '^card',
+      templateUrl: 'assets/templates/element-select.html',
+      controller: function($scope) {
+        var vm = this;
+
+        vm.selectOption = function(variable, option) {
+          vm.f[variable] = option;
+          $('#' + variable).dropdown('set selected', option);
+        } 
+
+        vm.$postLink = function () {
+          $('.ui.checkbox').checkbox();
+          $('.ui.dropdown').dropdown();
+          sendMessage();
+        };
+
+        $scope.$on(vm.raw.variable + 'OnFinishRender', function(ngRepeatFinishedEvent) {
+          vm.raw.options.forEach(function(option) {
+            if(option.default) {
+              $('#' + vm.raw.variable).dropdown('set selected', option.name);
+            }
+          });
+        });
+
+        vm.$onInit = function() {
+        }        
+      }
+    })      
+    .component('elementHeader', {
+      restrict: 'E',
+      bindings: {
+        raw: '='
+      },
+      require: {
+        parent: '^card',
+      },
+      templateUrl: 'assets/templates/element-header.html',
+      controller: function() {
+        var vm = this;
+
+        vm.$postLink = function () {
+          sendMessage();
+        };        
+      }
+    })   
+    .component('elementEmbed', {
+      restrict: 'E',
+      bindings: {
+        raw: '='
+      },
+      parent: '^card',
+      templateUrl: 'assets/templates/element-embed.html',
+      controller: function() {
+        var vm = this;
+
+        vm.initEmbed = function() {
+          $('.ui.embed').embed();
+        }
+
+        vm.$postLink = function () {
+          $('.ui.embed').embed({
+            url      : vm.raw.url,
+            // placeholder : '/images/bear-waving.jpg'
+          });
+          sendMessage();
+        };        
+      }
+    }) 
+    .component('elementList', {
+      restrict: 'E',
+      parent: '^card',
+      templateUrl: 'assets/templates/element-list.html',
+      controller: function() {
+        var vm = this;
+
+        vm.$postLink = function () {
+          sendMessage();
+        };        
+      }
+    })  
+    .component('elementImage', {
+      restrict: 'E',
+      bindings: {
+        raw: '='
+      },
+      parent: '^card',
+      templateUrl: 'assets/templates/element-image.html',
+      controller: function() {
+        var vm = this;
+
+        vm.$postLink = function () {
+          sendMessage();
+        };        
+      }
+    })    
+    .component('elementExtra', {
+      restrict: 'E',
+      bindings: {
+        raw: '='
+      },
+      parent: '^card',
+      templateUrl: 'assets/templates/element-extra.html',
+      controller: function() {
+        var vm = this;
+
+        vm.$postLink = function () {
+          sendMessage();
+        };        
+      }
+    })    
+    .component('elementButtons', {
+      restrict: 'E',
+      bindings: {
+        raw: '=',
+        f: '='
+      },
+      parent: '^card',
+      templateUrl: 'assets/templates/element-buttons.html',
+      controller: function() {
+        var vm = this;
+
+        vm.onClick = function(action) {
+          alert('hello');
+          console.log('form', vm.f);
+        }
+
+        vm.$postLink = function () {
+          sendMessage();
+        };        
+      }
+    })    
+    .filter('trustAsHtml', function($sce) {
+      return function(html) {
+        return $sce.trustAsHtml(html);
+      };
+    })
+    .directive('animationend', function() {
+      return {
+        restrict: 'A',
+        scope: {
+          animationend: '&'
+        },
+        link: function(scope, element) {
+          var callback = scope.animationend(),
+              events = 'animationend webkitAnimationEnd MSAnimationEnd' +
+                'transitionend webkitTransitionEnd';
+
+          element.on(events, function(event) {
+            callback.call(element[0], event);
+          });
+        }
+      };
+    })    
+    .directive('htmldiv', function($compile, $parse) {
+    return {
+      restrict: 'E',
+      scope: true,
+      link: function(scope, element, attr) {
+        scope.$watch(attr.content, function() {
+          var text = $parse(attr.content)(scope) || '';
+          var re = new RegExp('recipient.', 'g');
+          element.html(text.replace(re, '$ctrl.parent.recipient.'));
+          $compile(element.contents())(scope);
+        }, true);
+      }
+    };
+    })    
+    .directive('onFinishRender', function ($timeout) {
+        return {
+            restrict: 'A',
+            link: function (scope, element, attr) {
+                if (scope.$last === true) {
+                    $timeout(function () {
+                        scope.$emit(attr.onFinishRender);
+                    });
+                }
+            }
+        }
+    })  
+    ;
+  //]]> 
+
+  </script>
+
+  <script>
+    function toggleView() {
+      $('.messages').toggle();
+      sendMessage();    
+    }
+
+    function sendMessage (type) {
+      // console.log('sendMessage', type)
+      var height = $('.bot-messages').outerHeight(true);
+      var width = $('.bot-messages').outerWidth(true);
+      try {
+        window.parent.postMessage({type: type ? type : 'loaded', value: {bot_id: '1232', width: width, height: height}}, '*')
+      } catch (e) {
+        window.parent.postMessage({type: type ? type : 'loaded', value: {bot_id: '1232', width: width, height: height}}, '*')
+      }
+    }
+
+    function decline() {
+      sendMessage('bot_loading'); 
+      $('#card-form').transition({
+        animation: 'fly up',
+        onComplete : function() {
+          sendMessage();   
+        } 
+      })
+    }
+
+    function approve() {
+      sendMessage('bot_loading'); 
+      $('#card-welcome').transition({
+        animation: 'fly up',
+        onComplete : function() {
+          $(this).hide();
+          sendMessage();   
+          $('#card-form').transition({
+            animation: 'fade in',
+            onComplete : function() {
+              sendMessage();   
+            } 
+          })
+        } 
+      })            
+    }
+
+    function yes() {
+      sendMessage('bot_loading'); 
+      $('#card-buttons').transition({
+        animation: 'fly up',
+        onComplete : function() {
+          $(this).hide();
+          sendMessage();   
+          $('#card-welcome').transition({
+            animation: 'fly down',
+            onComplete : function() {
+              sendMessage();   
+            } 
+          })            
+        } 
+      })
+    }
+
+    function no() {
+      sendMessage('bot_loading'); 
+      $('#card-buttons').transition({
+        animation: 'fly up',
+        onComplete : function() {
+          $(this).hide();
+          sendMessage();   
+        } 
+      })
+    }
+
+    function bookmarks() {
+      sendMessage('bot_loading'); 
+      recentActiveMessage = '#card-list';
+      $('#card-list').transition({
+        animation: 'fly down',
+        onComplete : function() {
+          sendMessage();   
+        } 
+      })
+    }
+
+    function contact() {
+      sendMessage('bot_loading'); 
+      recentActiveMessage = '#card-contact';
+      $('#card-contact').transition({
+        animation: 'fly down',
+        onComplete : function() {
+          sendMessage();   
+        } 
+      })
+    }    
+
+    function banner() {
+      sendMessage('bot_loading'); 
+      recentActiveMessage = '#card-banner';
+      $('#card-banner').transition({
+        animation: 'fly down',
+        onComplete : function() {
+          sendMessage();   
+        } 
+      })
+    }  
+
+    function text() {
+      sendMessage('bot_loading'); 
+      recentActiveMessage = '#card-text';
+      $('#card-text').transition({
+        animation: 'fly down',
+        onComplete : function() {
+          sendMessage();   
+        } 
+      })
+    }        
+
+    function where() {
+      sendMessage('bot_loading'); 
+      recentActiveMessage = '#card-where';
+      $('#card-where').transition({
+        animation: 'fly down',
+        onComplete : function() {
+          sendMessage();   
+        } 
+      })
+    }
+
+    function welcome() {
+      sendMessage('bot_loading'); 
+      recentActiveMessage = '#card-buttons';
+      $('#card-buttons').transition({
+        animation: 'fly down',
+        onComplete : function() {
+          sendMessage();   
+        } 
+      })
+    }
+
+    function summary() {
+      sendMessage('bot_loading'); 
+      recentActiveMessage = '#card-summary';
+      $('#card-summary').transition({
+        animation: 'fly down',
+        onComplete : function() {
+          sendMessage();   
+        } 
+      })
+    }
+
+    function hideSummary(cb) {
+      sendMessage('bot_loading'); 
+      $('#card-summary').transition({
+        animation: 'fly up',
+        onComplete : function() {
+          $(this).hide();
+          sendMessage();   
+          if(cb) {
+            cb();
+          }
+        } 
+      })
+    }
+
+    var recentActiveMessage;
+
+    function hideAllMessages(cb) {
+      $(recentActiveMessage).transition({
+        animation: 'fly up',
+        onComplete : function() {
+          $(this).hide();
+          sendMessage();   
+          if(cb) {
+            cb();
+          }
+        } 
+      })
+    }
+
+    $(window).load(function () {
+      sendMessage()
+      $('.ui.checkbox').checkbox();
+      $('.ui.dropdown').dropdown();
+
+      summary();
+
+      $('.item.summary-where').click(function() {
+        hideSummary(function() {
+          where();
+        });
+      })
+
+      $('.item.summary-subscribe').click(function() {
+        hideSummary(function() {
+          approve();
+        });
+      })
+
+      $('.item.summary-bookmarks').click(function() {
+        hideSummary(function() {
+          bookmarks();
+        });
+      })      
+
+      $('.item.summary-contact').click(function() {
+        hideSummary(function() {
+          contact();
+        });
+      })   
+
+      $('.item.summary-banner').click(function() {
+        hideSummary(function() {
+          banner();
+        });
+      })  
+
+      $('.item.summary-text').click(function() {
+        hideSummary(function() {
+          text();
+        });
+      })  
+
+      $('.item.help').click(function() {
+        hideSummary(function() {
+          welcome();
+        });
+      })
+
+      $('.button.back').click(function() {
+        hideAllMessages(function() {
+          summary();
+        });
+      })
+
+      $('.button.approve').click(function() {
+        approve();
+      })
+
+      $('.button.decline').click(function() {
+        decline();
+      })
+
+      $('.button.yes').click(function() {
+        yes();
+      });
+
+      $('.button.no').click(function() {
+        no();
+      });
+    })
+  </script>
+</html>

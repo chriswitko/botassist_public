@@ -1,0 +1,112 @@
+<!DOCTYPE>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>BotAssi.st</title>
+    <link rel="stylesheet" href="./assets/css/botassi.st.css">
+    <style>
+      @keyframes border-pulsate {
+          0%   { border-color: rgba(10, 131, 230, 1); }
+          50%  { border-color: rgba(0, 255, 255, 0); }
+          100% { border-color: rgba(10, 131, 230, 1); }
+      }
+
+      .static {
+        background: url(/assets/img/icon_bg.png) no-repeat 50% 50%;
+        background-size: contain;
+        width: 75px;
+        height: 75px;
+        display: none;
+      }
+
+      .pulsate {
+        border: 10px solid cyan;
+        border-radius: 50px;
+        animation: border-pulsate 2s infinite;
+        position: absolute;
+        display: none;
+        width: 75px;
+        height: 75px;
+      }
+    </style>
+  </head>
+  <body>
+    <section class="bot-container">
+      <div class="logo" onclick="toggleView()">
+        <div class="static"></div>
+        <div class="pulsate"></div>
+        <img src="/assets/img/bot_bg_only.png"/>
+      </div>
+    </section>
+  </body>
+  <script src="/assets/js/jquery/jquery.min.js"></script>
+  <script>
+    function loading() {
+      $('.static').hide();
+      $('.pulsate').show();
+    }
+
+    function loaded() {
+      $('.static').show();
+      $('.pulsate').hide();
+    }
+
+    function toggleView() {
+      if($('.messages').is(":visible")) {
+        loading();
+      } else {
+        loaded();
+      }
+      $('.messages').toggle();
+      sendMessage('toggle_messages');    
+    }
+
+    function sendMessage (type) {
+      var height = $('.bot-container').height();
+      var width = $('.bot-container').width();
+      try {
+        window.parent.postMessage({type: type, value: {bot_id: '1232', width: width, height: height}}, '*')
+      } catch (e) {
+        window.parent.postMessage({type: type, value: {bot_id: '1232', width: width, height: height}}, '*')
+      }
+    }
+
+    function addEvent (object, type, handler) {
+      console.log('listener added');
+
+      var method
+      if (object && type && handler) {
+        method = object.addEventListener ? 'addEventListener' : object.attachEvent ? 'attachEvent' : ''
+        type = method === 'addEventListener' ? type : 'on' + type
+        if (method) {
+          object[method](type, function (event) {
+            event = event || window.event
+            handler.apply(object, [event])
+          })
+          return true
+        }
+      }
+      return false
+    }    
+
+    var onMessageHandler = function (event) {
+      // console.log('bot_event', event.data);
+      if (event.data && event.data.type === 'bot_loading') {
+        loading()
+      }
+      if (event.data && event.data.type === 'bot_loaded') {
+        loaded()
+      }
+    }
+
+    $(window).load(function () {
+      loading();
+      sendMessage('load_icon')
+      addEvent(window, 'message', onMessageHandler)
+    })
+  </script>
+</html>

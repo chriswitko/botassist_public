@@ -1,0 +1,43 @@
+@import 'normalize'; 
+
+*,
+*:after,
+*:before {
+  box-sizing: border-box; 
+}
+
+body {
+  overflow: hidden;
+  background: transparent;
+}
+
+.hide {
+  display: block;
+}
+
+.bot-container {
+  position: relative;
+  display: table;
+  min-width: 75px;
+  min-height: 75px;
+
+  .logo {
+    text-align: right;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    display: table;
+    width: 75px;
+    height: 75px;
+
+    img {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      cursor: pointer;
+      width: 55px;
+      height: 55px;
+    }
+  }
+}
+

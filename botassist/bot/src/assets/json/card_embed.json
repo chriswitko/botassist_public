@@ -1,0 +1,64 @@
+{
+	"sender": {
+		"id": "1234",
+    "custom_fields": {
+      "contact_email": "hi@botassi.st"
+    }
+	},
+	"recipient": { 
+		"id": "1234",
+		"insights": {
+			"first_seen": "2016-10-10",
+			"last_seen": "2016-10-10",
+			"number_of_visits": 5
+		},
+		"custom_fields": { 
+			"name": "Chris Witko",
+			"email": "chris.witko@gmail.com",
+			"short_size": "L",
+			"shoes_size": "45",
+			"date_birth": {
+				"day": "10",
+				"month": "10",
+				"year": 1980
+			}
+		}
+	},
+  "card": {
+    "name": "My first card",
+    "template_type": "text",
+    "payload": {
+      "header": {
+        "text": "Wher am I now?"
+      },
+      "embed": {
+        "url": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d402589.82473286!2d144.772274153404!3d-37.97169127333631!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6ad646b5d2ba4df7%3A0x4045675218ccd90!2sMelbourne+VIC%2C+Australia!5e0!3m2!1sen!2suk!4v1479394122220"
+      },
+      "extra_content": {
+        "text": "{{$ctrl.design.custom_fields.responses}} subscribers",
+        "icon": "heart",
+        "color": "red"
+      },
+      "buttons": [
+        {
+          "action": {
+            "method": "postback",
+            "message_id": "1234",
+            "url": "http://google.com"
+          },
+          "text": "Send",
+          "icon": "chat",
+          "color": "green"
+        },
+        {
+          "text": "Cancel",
+          "icon": "remove",
+          "color": "default"
+        }
+      ]
+    },
+    "custom_fields": {
+      "responses": 10
+    }
+  }
+}

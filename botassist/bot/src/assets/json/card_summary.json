@@ -1,0 +1,55 @@
+{
+	"sender": {
+		"id": "1234",
+    "custom_fields": {
+      "contact_email": "hi@botassi.st"
+    }
+	},
+	"recipient": { 
+		"id": "1234",
+		"insights": {
+			"first_seen": "2016-10-10",
+			"last_seen": "2016-10-10",
+			"number_of_visits": 5
+		},
+		"custom_fields": { 
+			"name": "Chris Witko",
+			"email": "chris.witko@gmail.coam",
+			"short_size": "L",
+			"shoes_size": "45",
+			"date_birth": {
+				"day": "10",
+				"month": "10",
+				"year": 1980
+			}
+		}
+	},
+  "card": {
+    "template_type": "summary",
+    "payload": {
+      "summary": {
+        "image": {
+          "src": "https://scontent-lhr3-1.xx.fbcdn.net/v/t1.0-0/c0.58.525.233/p235x350/15109609_10154150068965765_4148562925113687983_n.jpg?oh=69f912430e4d91e2ab771a9ed4ed82d1&oe=58C0E51D",
+          "link": ""
+        },
+        "fields": [
+          {
+            "action": {
+              "method": "postback",
+              "message_id": "1234",
+              "url": "http://google.com"
+            },
+            "text": "AW 2016/17 - Shop Now",
+            "icon": "cart"
+          },
+          {
+            "text": "Subscribe to our Newsletter"
+          }
+        ]
+      }
+    },
+    "custom_fields": {
+      "responses": 10
+    }
+  }
+}

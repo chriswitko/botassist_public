@@ -1,0 +1,36 @@
+{
+  "flow": {
+    "name": "Welcome users",
+    "triggers": [
+      {
+        "users": "all"
+      },
+      {
+        "url": "any"
+      }
+    ],
+    "frequency": {
+      "type": "once_per_session"
+    },
+    "cards": [
+      {
+        "card_id": "1234",
+        "button_1": {
+          "type": "postback", // POSTBACK ALWAYS SAVE DATA TO USER
+          "card_id": "5678"
+        },
+        "button_2": {
+          "type": "postback",
+          "action": "BOT_CLOSE"
+        }
+      },
+      {
+        "card_id": "5678",
+        "button_1": {
+          "type": "postback",
+          "action": "BOT_CLOSE"
+        }
+      }
+    ]
+  }
+}

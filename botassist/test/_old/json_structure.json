@@ -1,0 +1,52 @@
+// CREATING NEW MESSAGES POST https://botassi.st/api/messages
+
+{
+	"sender": {
+		"id": "1234"
+	},
+	"recipient": { // only if sender is going to display message to one recipment
+		"id": "1234",
+		"insights": {
+			"first_seen": "2016-10-10",
+			"last_seen": "2016-10-10",
+			"number_of_visits": 5
+		},
+		"custom_fields": { // response from server
+			"name": "Chris Witko",
+			"email": "chris.witko@gmail.com",
+			"short_size": "L",
+			"shoes_size": "45",
+			"date_birth": {
+				"day": "10",
+				"month": "10",
+				"year": 1980
+			}
+		}
+	},
+	"message": {
+		"name": "Ask user to subscribe via email",
+		"attachment": {
+			"payload": {
+				"template_type": "generic",
+				"elements": [
+					{
+						"title": "",
+						"body": "Would you like to receive information about special discounts and offers?",
+						"buttons": [
+							{
+								"type": "message", // web_url, message, js, postback (POST, internal, save to user data or external)
+								"title": "Subscribe Me",
+								"payload": "1234"
+							},
+							{
+								"type": "postback",
+								"title": "No, thank you",
+								"payload": "action:botassist_close"
+							}              
+						]
+					}
+				]
+			}
+		}
+	}
+}

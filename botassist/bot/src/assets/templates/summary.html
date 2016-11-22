@@ -1,0 +1,18 @@
+<script type="text/ng-template" id="temp2.html">
+  <element-image raw="$ctrl.raw.image" ng-if="$ctrl.raw.image"></element-image>
+  <a href class="item summary-text" ng-repeat="el in $ctrl.raw.fields track by $index">
+    <i class="middle aligned icon" ng-class="el.icon" ng-if="el.icon"></i>
+    {{el.text}}
+  </a>
+  <div class="ui bottom attached buttons">
+    <div class="ui bottom attached button back">
+      Powered by BotAssi.st
+    </div>
+    <div class="ui bottom attached button icon">
+      <i class="bookmark icon"></i>
+    </div>
+    <div class="ui bottom attached button icon">
+      <i class="close icon"></i>
+    </div>
+  </div>
+</script>

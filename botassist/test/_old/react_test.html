@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html class=''>
+
+<head>
+  <meta charset='UTF-8'>
+  <meta name="robots" content="noindex">
+
+  <link rel='stylesheet prefetch' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css'>
+  <style class="cp-pen-styles">
+    body {
+      background-color: #CFF09E;
+    }
+    .butt {
+      background-color: #CFF09E;
+    }
+    .inner {
+      margin: 100px 20% 100px 20%;
+      padding: 50px;
+      background-color: #FCFEF5;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="container"></div>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/react/15.3.1/react.min.js'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/react/15.3.1/react-dom.min.js'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/axios/0.14.0/axios.min.js'></script>
+  <script>
+    "use strict";
+
+    var QuoteBox = React.createClass({
+      displayName: "QuoteBox",
+
+      render: function render() {
+        return React.createElement(
+          "div",
+          null,
+          React.createElement(
+            "p",
+            null,
+            this.props.quote
+          ),
+          React.createElement(
+            "p", {
+              className: "text-right"
+            },
+            this.props.author
+          )
+        );
+      }
+    });
+
+    var QuoteMachine = React.createClass({
+      displayName: "QuoteMachine",
+
+      getInitialState: function getInitialState() {
+        return {
+          quotesData: [],
+          quote: "",
+          author: ""
+        };
+      },
+
+			getRemote: function(cb) {
+        var _this = this;
+				cb = cb || function() {};
+
+				axios.get(_this.props.source).then(function(result) {
+          _this.setState({
+            quotesData: result.data
+          });
+          _this.setState({
+            quote: _this.state.quotesData[1].content.slice(3, -5)
+          });
+          _this.setState({
+            author: _this.state.quotesData[1].title
+          });
+					cb();
+        }).catch(function(error) {
+          console.log(error);
+        });
+			},
+
+      componentDidMount: function componentDidMount() {
+        this.getRemote();
+      },
+
+      getRandomQuote: function getRandomQuote(event) {
+        var _this = this;
+        var rnd = Math.floor(Math.random() * 5);
+				this.getRemote(function() {
+					_this.setState({
+						quote: _this.state.quotesData[rnd].content.slice(3, -5)
+					});
+					_this.setState({
+						author: _this.state.quotesData[rnd].title
+					});
+					document.body.style.backgroundColor = '#A8DBA8';
+					document.getElementById("tweet").style.backgroundColor = '#A8DBA8';
+					document.getElementById("new").style.backgroundColor = '#A8DBA8';
+				})
+      },
+
+      tweetIt: function tweetIt(event) {
+        var quoteTweet = this.state.quote;
+        var auth = this.state.author;
+        quoteTweet = quoteTweet.replace(/;/g, '%3b');
+        window.open('https://twitter.com/intent/tweet?text="' + quoteTweet + '" -' + auth + '&hashtags=quotes');
+      },
+
+      render: function render() {
+        return React.createElement(
+          "div", {
+            className: "inner well clearfix"
+          },
+          React.createElement(QuoteBox, {
+            quote: this.state.quote,
+            author: this.state.author
+          }),
+          React.createElement(
+            "button", {
+              id: "tweet",
+              className: "btn btn-default pull-left butt",
+              onClick: this.tweetIt
+            },
+            "Tweet"
+          ),
+          React.createElement(
+            "button", {
+              id: "new",
+              className: "btn btn-default pull-right butt",
+              onClick: this.getRandomQuote
+            },
+            "New Quote"
+          )
+        );
+      }
+    });
+
+    ReactDOM.render(React.createElement(QuoteMachine, {
+      source: "http://quotesondesign.com/wp-json/posts?filter[orderby]=rand&filter[posts_per_page]=5"
+    }), document.getElementById("container"));
+    //# sourceURL=pen.js
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,41 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>BotAssi.st - Testing</title>
+    <style>
+      body {
+        background: white;
+        padding: 0;
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <iframe src="http://szykulski.com" frameborder="0" width="100%" height="100%"></iframe>
+    <!--<p>
+      <button type="button" onclick="subscribeMe()">Subscribe Me</button>
+    </p>-->
+
+		<script>
+			window.botAssistSettings = {
+				bot_id: '1232',
+				demo: true,
+				env: 'dev'
+			};
+    
+		</script>
+
+		<script>(function(){var w=window;var pud=w.BotAssist;if(typeof pud==="function"){pud.run('boot', botAssistSettings);}else{var d=document;var i=w.BotAssist;w.BotAssist=i;function l(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='/botassi.st.js?ts=' + new Date().valueOf();var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);}if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}}})()</script>		
+
+    <script>
+    function subscribeMe() {
+      window.BotAssist.run('open_messages', {});
+    }
+    </script>
+    
+  </body>
+</html>

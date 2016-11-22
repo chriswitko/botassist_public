@@ -1,0 +1,60 @@
+{
+	"sender": {
+		"id": "1234",
+    "custom_fields": {
+      "contact_email": "hi@botassi.st"
+    }
+	},
+	"recipient": { 
+		"id": "1234",
+		"insights": {
+			"first_seen": "2016-10-10",
+			"last_seen": "2016-10-10",
+			"number_of_visits": 5
+		},
+		"custom_fields": { 
+			"name": "Chris Witko",
+			"email": "chris.witko@gmail.com",
+			"short_size": "L",
+			"shoes_size": "45",
+			"date_birth": {
+				"day": "10",
+				"month": "10",
+				"year": 1980
+			}
+		}
+	},
+  "card": {
+    "name": "My first card",
+    "template_type": "text",
+    "payload": {
+      "header": {
+        "text": "Message for {{recipient.custom_fields.name || 'You'}}"
+      },
+      "image": {
+        "src": "https://www.thebodyshop.com/medias/9276411150366.jpg?context=images/h4a/h74/9276411150366.jpg",
+        "link": ""
+      },
+      "buttons": [
+        {
+          "action": {
+            "method": "postback",
+            "message_id": "1234",
+            "url": "http://google.com"
+          },
+          "text": "Send",
+          "icon": "chat",
+          "color": "green"
+        },
+        {
+          "text": "Cancel",
+          "icon": "remove",
+          "color": "default"
+        }
+      ]
+    },
+    "custom_fields": {
+      "responses": 10
+    }
+  }
+}
